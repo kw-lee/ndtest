@@ -1,0 +1,40 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build .app bundle
+        working-directory: macos
+        run: ./package-gui-app.sh
+
+      - name: Zip .app bundle
+        run: |
+          cd macos/dist
+          zip -r DirtyTest-macOS.zip DirtyTest.app
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DirtyTest-macOS
+          path: macos/dist/DirtyTest-macOS.zip
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: macos/dist/DirtyTest-macOS.zip
+          generate_release_notes: true

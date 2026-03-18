@@ -19,3 +19,8 @@ __history
 /Documents/*.pdf
 /Exe/*.rsm
 /SignedFirmware
+
+.build
+macos/dist
+macos/AppIcon.iconset
+.DS_Store
